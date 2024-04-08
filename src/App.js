@@ -1,41 +1,21 @@
-import { useState, useCallback } from 'react';
-import { ChromePicker} from 'react-color';
-import _ from 'lodash';
+import Navbar from "./Navbar";
+import ColorPicker from "./pages/ColorPicker";
+import MyPalettes from "./pages/MyPalettes";
+import MyColors from "./pages/MyColors";
+import {Route, Routes} from "react-router-dom";
 
-function App() {
-  const [currentColor, setCurrentColor] = useState({
-    r: 255,
-    g: 255,
-    b: 255,
-    a: 1
-  });
-
-  const handleColorChange = useCallback(_.throttle((color) => {
-    setCurrentColor(color.rgb);
-  }, 100), []); 
-
-
-  const appStyle = {
-    backgroundColor: `rgba(${currentColor.r}, ${currentColor.g}, ${currentColor.b}, ${currentColor.a})`,
-    height: "100vh",
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: "center",
-  };
-
-  return (
-    <div className="App" style={appStyle}>
-      <div>
-        <h1>Color Palette</h1>
-        <ChromePicker 
-          color={currentColor}
-          onChange={handleColorChange}
-        />
-    
-      </div>
-    </div>
-  );
+function App(){
+    return ( <>
+        <Navbar />
+        <div className="container">
+            <Routes>
+                <Route path="/" element={<ColorPicker />} />
+                <Route path="/my-palettes" element={<MyPalettes />} />
+                <Route path="/my-colors" element={<MyColors />} />
+            </Routes>
+        </div>
+    </>
+    );
 }
 
 export default App;

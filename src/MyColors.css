@@ -1,0 +1,55 @@
+.myColorsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    max-width: 960px; 
+    margin: 0 auto; 
+  }
+  
+  .colorsGrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start; 
+    gap: 10px; 
+    padding: 0 10px; 
+  }
+  
+  .colorItem {
+    position: relative;
+    margin: 10px;
+    cursor: pointer;
+  }
+  
+  .colorSquare {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 5px;
+  }
+  
+  .colorHex {
+    text-align: center;
+  }
+  
+  .colorItem:hover .deleteIcon {
+    display: flex;
+  }
+  
+  .deleteIcon {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: white;
+    background: red;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 20px;
+    user-select: none;
+    transition: opacity 0.3s ease;
+  }
+  
