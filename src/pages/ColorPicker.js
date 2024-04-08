@@ -3,6 +3,8 @@ import { ChromePicker } from 'react-color';
 import _ from 'lodash';
 
 function ColorPicker({ onAddColor }) {
+
+
   const [currentColor, setCurrentColor] = useState({
     r: 255,
     g: 255,

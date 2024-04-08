@@ -4,10 +4,16 @@ import { EditMyColors } from './EditMyColors';
 
 
 function MyColors() {
+
+
     const [colors, setColors] = useState(() => {
         const storedColors = localStorage.getItem('colors');
         return storedColors ? JSON.parse(storedColors) : [];
     });
+
+
+    const [editingColor, setEditingColor] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     const copyToClipboard = (hex) => {
         navigator.clipboard.writeText(hex).then(() => {
@@ -15,6 +21,15 @@ function MyColors() {
         }).catch(err => {
             console.error('Could not copy text: ', err);
         });
+    };
+
+    const handleColorUpdate = (newColor, index) => {
+        let updatedColors = [...colors];
+        if (index !== -1) {
+            updatedColors[index] = {...updatedColors[index], hex: newColor};
+            setColors(updatedColors);
+            localStorage.setItem('colors', JSON.stringify(updatedColors));
+        }
     };
 
     const removeColor = (indexToRemove) => {
@@ -28,8 +43,6 @@ function MyColors() {
         setIsOpen(true); // Open the modal
     };
 
-    const [editingColor, setEditingColor] = useState(null);
-    const [isOpen, setIsOpen] = useState(false);
 
 
     return (
@@ -48,9 +61,12 @@ function MyColors() {
                         <div className="editIcon" onClick={() => editColor(color)}> </div>
 
 
-                        <EditMyColors isOpen={isOpen} onClose={() => setIsOpen(false)}>
-                            <div>{editingColor ? editingColor.hex : null}</div>
-                        </EditMyColors>
+                        <EditMyColors
+                            isOpen={isOpen}
+                            onClose={() => setIsOpen(false)}
+                            initialColor={editingColor ? editingColor.hex : '#FFFFFF'} 
+                            onColorUpdate={(newColor) => handleColorUpdate(newColor, colors.indexOf(editingColor))}
+                        />
 
                         <div className="deleteIcon" onClick={() => removeColor(index)}>
                             &times;
