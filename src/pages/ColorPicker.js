@@ -26,7 +26,7 @@ function ColorPicker({ onAddColor }) {
       return;
     }
 
-    localStorage.setItem('colors', JSON.stringify([...existingColors, { hex: hexColor }]));
+    localStorage.setItem('colors', JSON.stringify([...existingColors, { hex: hexColor}]));
     
     setShowNiceMessage(true);
     setTimeout(() => {

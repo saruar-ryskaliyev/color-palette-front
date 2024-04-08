@@ -23,13 +23,14 @@ function MyColors() {
         setColors(newColors);
     };
 
-    const editColor = (indexToEdit) => {
-        alert('Edit color functionality is not implemented yet');
-    
-    }
+    const editColor = (color) => {
+        setEditingColor(color); // Store the hex value of the color being edited
+        setIsOpen(true); // Open the modal
+    };
 
+    const [editingColor, setEditingColor] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
 
-    const [isOpen, setIsOpen] = useState(false)
 
     return (
         <div className="myColorsContainer">
@@ -43,9 +44,12 @@ function MyColors() {
                             onClick={() => copyToClipboard(color.hex)}
                         ></div>
                         <div className="colorHex">{color.hex}</div>
-                        <div className="editIcon" onClick={() => setIsOpen(true)}> </div>
+
+                        <div className="editIcon" onClick={() => editColor(color)}> </div>
+
 
                         <EditMyColors isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                            <div>{editingColor ? editingColor.hex : null}</div>
                         </EditMyColors>
 
                         <div className="deleteIcon" onClick={() => removeColor(index)}>

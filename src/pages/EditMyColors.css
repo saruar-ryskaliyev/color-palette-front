@@ -1,4 +1,7 @@
 .modal-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
     top: 0;
     left: 0;
@@ -12,13 +15,18 @@
   }
   
   .modal-content {
-    position: relative; /* This is needed to position children absolutely inside it */
+    position: relative;
     background-color: #fff;
-    padding: 20px;
+    padding: 50px; /* Increase padding */
+    width: 60%; /* Set a width, or you can use a specific pixel value */
+    max-width: 600px; /* Maximum width */
+    min-height: 200px; /* Minimum height */
     border-radius: 5px;
     z-index: 1001; /* Make sure this is above the overlay */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .5); /* Optional: Adds a shadow for better visibility */
     /* Add more styling as needed */
   }
+
   
   .modal-close-button {
     position: absolute;
