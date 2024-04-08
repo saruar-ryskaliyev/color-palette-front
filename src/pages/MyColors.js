@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../MyColors.css';
+import { EditMyColors } from './EditMyColors';
 
 
 function MyColors() {
@@ -22,6 +23,14 @@ function MyColors() {
         setColors(newColors);
     };
 
+    const editColor = (indexToEdit) => {
+        alert('Edit color functionality is not implemented yet');
+    
+    }
+
+
+    const [isOpen, setIsOpen] = useState(false)
+
     return (
         <div className="myColorsContainer">
             <h1>My Colors</h1>
@@ -34,6 +43,11 @@ function MyColors() {
                             onClick={() => copyToClipboard(color.hex)}
                         ></div>
                         <div className="colorHex">{color.hex}</div>
+                        <div className="editIcon" onClick={() => setIsOpen(true)}> </div>
+
+                        <EditMyColors isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                        </EditMyColors>
+
                         <div className="deleteIcon" onClick={() => removeColor(index)}>
                             &times;
                         </div>

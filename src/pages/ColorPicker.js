@@ -17,7 +17,15 @@ function ColorPicker({ onAddColor }) {
 
   const handleAddColor = () => {
     const hexColor = `#${((1 << 24) + (currentColor.r << 16) + (currentColor.g << 8) + currentColor.b).toString(16).slice(1)}`;
+
     const existingColors = JSON.parse(localStorage.getItem('colors')) || [];
+
+    // Check if the color already exists
+    if (existingColors.some(color => color.hex === hexColor)) {
+      alert('You already have this color in your library.'); // You can change this to a nicer notification if you prefer
+      return;
+    }
+
     localStorage.setItem('colors', JSON.stringify([...existingColors, { hex: hexColor }]));
     
     setShowNiceMessage(true);

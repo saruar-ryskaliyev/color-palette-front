@@ -1,0 +1,31 @@
+.modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7); /* Overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Overlay z-index */
+  }
+  
+  .modal-content {
+    position: relative; /* This is needed to position children absolutely inside it */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 1001; /* Make sure this is above the overlay */
+    /* Add more styling as needed */
+  }
+  
+  .modal-close-button {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  

@@ -34,6 +34,10 @@
   .colorItem:hover .deleteIcon {
     display: flex;
   }
+
+  .colorItem:hover .editIcon {
+    display: flex;
+  }
   
   .deleteIcon {
     display: none;
@@ -51,5 +55,29 @@
     line-height: 20px;
     user-select: none;
     transition: opacity 0.3s ease;
+  }
+
+
+
+
+  .editIcon {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 20px;
+    user-select: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .editIcon::before {
+    content: "\270E"; 
   }
   
