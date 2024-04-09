@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ChromePicker, TwitterPicker } from 'react-color';
 import { useParams } from 'react-router-dom';
+import { EditMyColors } from './EditMyColors';
+import '../MyColors.css';
+
 
 const Container = styled.div`
     display: flex;
@@ -32,21 +35,21 @@ const ColorGrid = styled.div`
 `;
 
 const ColorSwatch = styled.div`
-    position: relative;
-    height: 250px;
-    background-color: ${props => props.color};
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    color: #fff;
-    font-weight: bold;
-    padding: 10px;
-    cursor: pointer;
-    &:hover {
-        & > button {
-            display: block;
-        }
+  position: relative;
+  height: 250px;
+  background-color: ${props => props.color};
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px;
+  cursor: pointer;
+  &:hover {
+    & > button, & > div {
+      display: flex; // This ensures both the button and the div are shown
     }
+  }
 `;
 
 const DeleteButton = styled.button`
@@ -85,6 +88,9 @@ export default function CreatePalette() {
     const [currentColor, setCurrentColor] = useState('#fff');
     const [myColors, setMyColors] = useState([]);
     const [name, setName] = useState('');
+    const [editingColor, setEditingColor] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+
 
     useEffect(() => {
         const loadedColors = JSON.parse(localStorage.getItem('colors')) || [];
@@ -144,6 +150,12 @@ export default function CreatePalette() {
         navigate('/my-palettes');
     };
 
+    const editColor = (color) => {
+        setEditingColor(color); // Store the hex value of the color being edited
+        setIsOpen(true); // Open the modal
+    };
+
+
     return (
         <Container>
             <Header>
@@ -173,6 +185,16 @@ export default function CreatePalette() {
                     <ColorSwatch key={index} color={color}>
                         {color.toUpperCase()}
                         <DeleteButton onClick={() => deleteColor(index)}>&times;</DeleteButton>
+                        <div className="editIcon" onClick={() => editColor(color)}> </div>
+                        <EditMyColors
+                            isOpen={isOpen}
+                            onClose={() => setIsOpen(false)}
+                            initialColor={editingColor || '#FFFFFF'}
+                            onColorUpdate={(newColor) => {
+                                const updatedColors = [...colors];
+                                updatedColors[colors.indexOf(editingColor)] = newColor;
+                                setColors(updatedColors);
+                            }}/>
                     </ColorSwatch>
                 ))}
             </ColorGrid>
