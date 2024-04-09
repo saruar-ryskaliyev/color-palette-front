@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ChromePicker, TwitterPicker } from 'react-color';
-
-
-
-
+import { useParams } from 'react-router-dom';
 
 const Container = styled.div`
     display: flex;
@@ -21,6 +18,12 @@ const Header = styled.div`
     margin-bottom: 20px;
 `;
 
+const Input = styled.input`
+    padding: 8px;
+    margin-right: 10px;
+    width: 200px; // Adjust the width as needed
+`;
+
 const ColorGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -29,124 +32,150 @@ const ColorGrid = styled.div`
 `;
 
 const ColorSwatch = styled.div`
+    position: relative;
     height: 250px;
-    background-color: ${(props) => props.color};
+    background-color: ${props => props.color};
     display: flex;
     align-items: flex-end;
     justify-content: center;
     color: #fff;
     font-weight: bold;
     padding: 10px;
+    cursor: pointer;
+    &:hover {
+        & > button {
+            display: block;
+        }
+    }
 `;
 
-const Dropdown = styled.select`
-  padding: 5px;
-  margin-right: 10px;
+const DeleteButton = styled.button`
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px 10px;
 `;
 
 const Button = styled.button`
-  padding: 10px 20px;
-  margin: 0 5px;
+    padding: 10px 20px;
+    margin: 0 5px;
 `;
 
 const ColorPickerContainer = styled.div`
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;  
-  align-items: center;      
-  flex-direction: column;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 `;
 
-const MyColorsList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px;
-`;
-
-const MyColorSwatch = styled.div`
-  width: 50px;
-  height: 50px;
-  background-color: ${(props) => props.color};
-  border-radius: 5px;
-  cursor: pointer;
-`;
 
 export default function CreatePalette() {
 
+
     const navigate = useNavigate();
+    const { paletteName } = useParams(); // Retrieve the palette name from the URL
+    const [colors, setColors] = useState([]);
+    const [currentColor, setCurrentColor] = useState('#fff');
+    const [myColors, setMyColors] = useState([]);
+    const [name, setName] = useState('');
 
     useEffect(() => {
-        const loadedColorObjects = JSON.parse(localStorage.getItem('colors')) || [];
-      
-        const loadedColorStrings = loadedColorObjects.map(colorObj => colorObj.hex);
-      
-        setMyColors(loadedColorStrings);
-      }, []);
-      
+        const loadedColors = JSON.parse(localStorage.getItem('colors')) || [];
+        setMyColors(loadedColors.map(colorObj => colorObj.hex));
 
-    
-    const [colorFormat, setColorFormat] = useState('hex');
-    const [colors, setColors] = useState([
-        '#1ABC9C',
-        '#16A085',
-        '#9B59B6',
-        '#E74C3C',
-        '#2C3E50',
-    ]);
-    const [currentColor, setCurrentColor] = useState('#fff'); 
-    const [myColors, setMyColors] = useState([]); 
+        // Load existing palette if editing
+        if (paletteName) {
 
+            console.log(`palette-${paletteName}`);
 
-    console.log(myColors)
+            const existingPalette = JSON.parse(localStorage.getItem(`palette-${paletteName}`));
 
+            if (existingPalette) {
+                setColors(existingPalette.colors);
+                setName(existingPalette.name);
+            }
+        }
+    }, [paletteName]);
 
-    
-      const addNewColor = (color) => {
-        setColors([...colors, color]);
-      };
-    
-      const handleColorChange = (color) => {
+    const handleColorChange = color => {
         setCurrentColor(color.hex);
-      };
-    
-      const selectMyColor = (color) => {
-        setCurrentColor(color);
-      };
-    
-      const goBack = () => {
+    };
+
+    const addNewColor = () => {
+        if (!colors.includes(currentColor)) {
+            setColors([...colors, currentColor]);
+        }
+    };
+
+    const deleteColor = index => {
+        const newColors = [...colors];
+        newColors.splice(index, 1);
+        setColors(newColors);
+    };
+
+    const goBack = () => {
         navigate('/my-palettes');
-      };
-    
-      return (
+    };
+
+    const savePalette = () => {
+
+        if (name === '') {
+            alert('Please provide a name for the palette');
+            return;
+        }
+
+        if (colors.length === 0) {
+            alert('Please add at least one color to the palette');
+            return;
+        }
+
+        const newPalette = {
+            name: name || paletteName,  
+            colors: colors
+        };
+        localStorage.setItem(`palette-${newPalette.name}`, JSON.stringify(newPalette));
+        navigate('/my-palettes');
+    };
+
+    return (
         <Container>
-          <Header>
-            <Button onClick={goBack}>Back</Button>
-            <div>
-              <Button onClick={() => addNewColor(currentColor)}>Add Color</Button>
-            </div>
-          </Header>
-          <ColorPickerContainer>
-          < h3>Color Picker</h3>
-            <ChromePicker color={currentColor} onChangeComplete={handleColorChange} />
-            <h3>My Colors</h3>
-            <TwitterPicker
-                colors={myColors}
-                color={currentColor}
-                onChangeComplete={handleColorChange}
-            />
-          </ColorPickerContainer>
-         
-
-
-          <ColorGrid>
-            {colors.map((color, index) => (
-              <ColorSwatch key={index} color={color}>
-                {color.toUpperCase()}
-              </ColorSwatch>
-            ))}
-          </ColorGrid>
+            <Header>
+                <Button onClick={goBack}>Back</Button>
+                <div>
+                    <Input
+                        placeholder="Palette Name"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                    />
+                    <Button onClick={addNewColor}>Add Color</Button>
+                    <Button onClick={savePalette}>Save Palette</Button>
+                </div>
+            </Header>
+            <ColorPickerContainer>
+                <h3>Color Picker</h3>
+                <ChromePicker color={currentColor} onChangeComplete={handleColorChange} />
+                <h3>My Colors</h3>
+                <TwitterPicker
+                    colors={myColors}
+                    color={currentColor}
+                    onChangeComplete={handleColorChange}
+                />
+            </ColorPickerContainer>
+            <ColorGrid>
+                {colors.map((color, index) => (
+                    <ColorSwatch key={index} color={color}>
+                        {color.toUpperCase()}
+                        <DeleteButton onClick={() => deleteColor(index)}>&times;</DeleteButton>
+                    </ColorSwatch>
+                ))}
+            </ColorGrid>
         </Container>
-      );
-    }
-    
+    );
+}

@@ -15,6 +15,7 @@ function App(){
                 <Route path="/my-palettes" element={<MyPalettes />} />
                 <Route path="/my-colors" element={<MyColors />} />
                 <Route path="/create-palette" element={<CreatePalette />} />
+                <Route path="/create-palette/:paletteName" element={<CreatePalette />} />
             </Routes>
         </div>
     </>
