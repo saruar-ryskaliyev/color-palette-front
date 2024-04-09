@@ -5,6 +5,7 @@ import { ChromePicker, TwitterPicker } from 'react-color';
 import { useParams } from 'react-router-dom';
 import { EditMyColors } from './EditMyColors';
 import '../MyColors.css';
+import html2canvas from 'html2canvas';
 
 
 const Container = styled.div`
@@ -69,6 +70,10 @@ const DeleteButton = styled.button`
 const Button = styled.button`
     padding: 10px 20px;
     margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
 `;
 
 const ColorPickerContainer = styled.div`
@@ -84,13 +89,15 @@ export default function CreatePalette() {
 
 
     const navigate = useNavigate();
-    const { paletteName } = useParams(); // Retrieve the palette name from the URL
+    const { paletteName } = useParams(); 
     const [colors, setColors] = useState([]);
     const [currentColor, setCurrentColor] = useState('#fff');
     const [myColors, setMyColors] = useState([]);
     const [name, setName] = useState('');
     const [editingColor, setEditingColor] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
+    const paletteRef = useRef(null);
+
 
 
     useEffect(() => {
@@ -109,6 +116,24 @@ export default function CreatePalette() {
             }
         }
     }, [paletteName]);
+
+    const downloadPalette = () => {
+
+        if (colors.length === 0) {
+            alert('Please add at least one color to the palette');
+            return;
+        }
+
+        html2canvas(paletteRef.current).then(canvas => {
+            const image = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            
+
+            link.href = image;
+            link.download = 'palette.png';
+            link.click();
+        });
+    };
 
     const handleColorChange = color => {
         setCurrentColor(color.hex);
@@ -170,6 +195,7 @@ export default function CreatePalette() {
                     />
                     <Button onClick={addNewColor}>Add Color</Button>
                     <Button onClick={savePalette}>Save Palette</Button>
+                    <Button onClick={downloadPalette}>Download Palette</Button>
                 </div>
             </Header>
             <ColorPickerContainer>
@@ -182,14 +208,24 @@ export default function CreatePalette() {
                     onChangeComplete={handleColorChange}
                 />
             </ColorPickerContainer>
-            <ColorGrid>
+            <ColorGrid ref={paletteRef}>
                 {colors.map((color, index) => (
                     <ColorSwatch key={index} color={color}>
                         {color.toUpperCase()}
                         <DeleteButton onClick={() => deleteColor(index)}>&times;</DeleteButton>
+                        <div className="editIcon" onClick={() => editColor(color)}> </div>
+                        <EditMyColors
+                            isOpen={isOpen}
+                            onClose={() => setIsOpen(false)}
+                            initialColor={editingColor || '#FFFFFF'}
+                            onColorUpdate={(newColor) => {
+                                const updatedColors = [...colors];
+                                updatedColors[colors.indexOf(editingColor)] = newColor;
+                                setColors(updatedColors);
+                            }}/>
                     </ColorSwatch>
                 ))}
             </ColorGrid>
         </Container>
     );
-}    
+}
