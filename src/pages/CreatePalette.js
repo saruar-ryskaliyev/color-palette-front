@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ChromePicker, TwitterPicker } from 'react-color';
@@ -65,6 +65,7 @@ const DeleteButton = styled.button`
     padding: 5px 10px;
 `;
 
+
 const Button = styled.button`
     padding: 10px 20px;
     margin: 0 5px;
@@ -96,7 +97,6 @@ export default function CreatePalette() {
         const loadedColors = JSON.parse(localStorage.getItem('colors')) || [];
         setMyColors(loadedColors.map(colorObj => colorObj.hex));
 
-        // Load existing palette if editing
         if (paletteName) {
 
             console.log(`palette-${paletteName}`);
@@ -119,6 +119,8 @@ export default function CreatePalette() {
             setColors([...colors, currentColor]);
         }
     };
+
+
 
     const deleteColor = index => {
         const newColors = [...colors];
@@ -185,19 +187,9 @@ export default function CreatePalette() {
                     <ColorSwatch key={index} color={color}>
                         {color.toUpperCase()}
                         <DeleteButton onClick={() => deleteColor(index)}>&times;</DeleteButton>
-                        <div className="editIcon" onClick={() => editColor(color)}> </div>
-                        <EditMyColors
-                            isOpen={isOpen}
-                            onClose={() => setIsOpen(false)}
-                            initialColor={editingColor || '#FFFFFF'}
-                            onColorUpdate={(newColor) => {
-                                const updatedColors = [...colors];
-                                updatedColors[colors.indexOf(editingColor)] = newColor;
-                                setColors(updatedColors);
-                            }}/>
                     </ColorSwatch>
                 ))}
             </ColorGrid>
         </Container>
     );
-}
+}    
