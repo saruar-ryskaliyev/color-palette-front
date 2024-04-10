@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiRequest } from './pages/api';
 import { useAuth } from './AuthContext';
+import { BASE_URL } from './constants';
+
+
+
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -10,16 +13,44 @@ const Login = () => {
     const navigate = useNavigate();
     const { user, login } = useAuth(); // Assuming 'user' holds the current user session information
 
-    const handleLogin = async (username, password) => {
-        try {
-            const data = await apiRequest('/token', 'POST', {
-                grant_type: 'password',
-                username: username,
-                password: password,
-            }, false); // 'false' for not JSON
 
-            login(data); // Pass the data directly to the login function in context
-            navigate('/'); // Navigate to home or dashboard as needed
+
+    const handleLogin = async (username, password) => {
+        const url = '/token';
+
+        const details = {
+            'username': username,
+            'password': password,
+            'grant_type': 'password' 
+        };
+
+        const formBody = [];
+        for (const property in details) {
+            const encodedKey = encodeURIComponent(property);
+            const encodedValue = encodeURIComponent(details[property]);
+            formBody.push(encodedKey + "=" + encodedValue);
+        }
+        const bodyString = formBody.join("&");
+
+
+
+
+
+        try{
+            const response = await fetch(BASE_URL + url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: bodyString,
+            });
+
+            
+            const result = await response.json();
+            if (response.ok) {
+                login(result);
+                navigate('/');
+            } else {
+                setError(result.error || 'An error occurred during login.');
+            }
         } catch (error) {
             setError(error.message || 'An error occurred during login.');
         }

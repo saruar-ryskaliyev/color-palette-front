@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
+import { BASE_URL } from '../constants';
 
 const PaletteGrid = styled.div`
   display: grid;
@@ -48,19 +49,50 @@ function MyPalettes() {
 
   useEffect(() => {
     loadPalettes();
+    console.log(localStorage.getItem('palettes'));
   }, []);
 
-  const loadPalettes = () => {
-    const loadedPalettes = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key.startsWith("palette-")) {
-        const palette = JSON.parse(localStorage.getItem(key));
-        loadedPalettes.push(palette);
+  const loadPalettes = async() => {
+
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const user_id = userData.userId;
+
+
+    console.log('userId', user_id)
+    const url = `${BASE_URL}/users/${user_id}/palettes`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'accept': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+
+        console.log('result', result)
+
+  
+        const loadedPalettes = Object.entries(result).map(([name, colors]) => ({
+          name,  
+          colors: colors.map(color => `#${color}`)
+        }));
+
+        localStorage.setItem('palettes', JSON.stringify(loadedPalettes));
+
+        setPalettes(loadedPalettes);
       }
+
+    } catch (error) {
+      console.error('Error fetching palettes:', error);
     }
-    setPalettes(loadedPalettes);
-  };
+
+
+};
+
 
   const createPalette = () => {
     navigate('/create-palette');
@@ -70,10 +102,41 @@ function MyPalettes() {
     navigate(`/create-palette/${paletteName}`);
   };
 
-  const deletePalette = (paletteName, e) => {
-    e.stopPropagation();  // Prevent opening the palette when clicking delete
-    localStorage.removeItem(`palette-${paletteName}`);
-    loadPalettes();
+  const deletePalette = async(paletteName, e) => {
+
+
+    e.stopPropagation();  
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const user_id = userData.userId;
+    const token = userData.token;
+
+
+
+    try {
+      const response = await fetch(`${BASE_URL}/users/${user_id}/palettes/${paletteName}`, {
+        method: 'DELETE',
+        headers: {
+          'accept': 'application/json ',
+          'Authorization': `Bearer ${token}`},
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        console.log(result);
+        localStorage.removeItem(`palette-${paletteName}`);
+        loadPalettes();
+      }
+      else {
+        console.error(result.error);
+      }
+
+    } catch (error) {
+      console.error('Error deleting palette:', error);
+    }
+ 
+
+    
+    
   };
 
   return (

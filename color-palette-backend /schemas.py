@@ -42,8 +42,6 @@ class UserBase(BaseModel):
         return v
 
 
-
-
 class UserCreate(UserBase):
     password: str
 

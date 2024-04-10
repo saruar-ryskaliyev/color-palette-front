@@ -9,7 +9,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Load user data from local storage on initial mount
         const storedUserData = localStorage.getItem('userData');
         if (storedUserData) {
             setUser(JSON.parse(storedUserData));
@@ -17,7 +16,6 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = (userData) => {
-        // Store user data and token in local storage
         localStorage.setItem('userData', JSON.stringify({
             token: userData.access_token,
             userId: userData.user_id,
@@ -31,9 +29,8 @@ export const AuthProvider = ({ children }) => {
     };
 
 
-
     const logout = () => {
-        localStorage.removeItem('userData');
+        localStorage.clear();
         setUser(null);
     };
 

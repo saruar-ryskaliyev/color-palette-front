@@ -4,18 +4,44 @@ from database import get_db
 from models import User
 from schemas import UserBase, UserCreate
 from auth import decode_access_token
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm.session import object_session
+from sqlalchemy.orm.attributes import flag_modified
 
 
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    user = decode_access_token(db, token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return user
+
+@router.delete("/users/{user_id}/colors/{color}", response_model=UserBase)
+async def delete_color(user_id: int, color: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = db.query(User).filter(User.id == user_id).first()
+
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if color in user.colors:
+        print("deleted")
+        user.colors.remove(color)
+        db.commit()
+        db.refresh(user)
+
+    return user
 
 @router.post("/users/{user_id}/colors", response_model=UserBase)
-async def add_color(user_id: int, token: str, color: str, db: Session = Depends(get_db)):
-
-    if not decode_access_token(db, token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-
+async def add_color(user_id: int, color: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user = db.query(User).filter(User.id == user_id).first()
+
+    
+
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -23,49 +49,33 @@ async def add_color(user_id: int, token: str, color: str, db: Session = Depends(
         user.colors = []  # Ensure it's a list before appending
 
     if color not in user.colors:
-        print("Adding color")
         user.colors.append(color)
-        db.commit()
-        db.refresh(user)
-
-    print(user.colors)
-
-    return user
-
-
-@router.delete("/users/{user_id}/colors/{color}", response_model=UserBase)
-async def delete_color(user_id: int, token:str, color: str, db: Session = Depends(get_db)):
-
-    if not decode_access_token(db, token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    if color in user.colors:
-        user.colors.remove(color)
         db.commit()
         db.refresh(user)
     return user
 
 @router.put("/users/{user_id}/colors/{old_color}/{new_color}", response_model=UserBase)
-async def change_color(user_id: int, token: str, old_color: str, new_color: str, db: Session = Depends(get_db)):
-
-
-    if not decode_access_token(db, token):
-        raise HTTPException(status_code=401, detail="Invalid token")
-
+async def change_color(user_id: int, old_color: str, new_color: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user = db.query(User).filter(User.id == user_id).first()
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    
     if old_color in user.colors:
-        index = user.colors.index(old_color)
-        user.colors[index] = new_color
+
+
+
+        new_colors = [new_color if color == old_color else color for color in user.colors]
+        user.colors = new_colors  # Assign the new list to user.colors
         db.commit()
         db.refresh(user)
+    
+    print(user.colors)
+    
     return user
 
+    
 
 @router.get("/users/{user_id}/colors", response_model=UserBase)
 async def get_colors(user_id: int, db: Session = Depends(get_db)):

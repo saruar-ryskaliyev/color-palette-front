@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiRequest } from './pages/api';
+import { BASE_URL } from './constants';
 
 
 const Register = ({ onRegister }) => {
@@ -30,27 +30,37 @@ const Register = ({ onRegister }) => {
 
     const handleRegister = async (username, password) => {
 
+        const url = '/register'
 
-        console.log("HERE")
+        const details = {
+            'username': username,
+            'colors': [],
+            'palettes': {},
+            'password': password
+        };
 
         try {
-            const data = await apiRequest('/register', 'POST', {
-                username: username,
-                colors: [],
-                palettes: {},
-                password: password,
+            const response = await fetch(BASE_URL + url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(details),
+            });
 
-            }, true);
+            const result = await response.json();
 
 
-            console.log("SUCCESS")
+            if (response.ok) {
+                navigate('/login');
+            } else if (response.status === 400) {
+                setError(result.error || 'Username already exists');
+            }
 
-            navigate('/login');
 
         } catch (error) {
             setError(error.message || 'An error occurred during registration.');
         }
-    }
+        
+    };
 
     return (
         <div className="register-container">

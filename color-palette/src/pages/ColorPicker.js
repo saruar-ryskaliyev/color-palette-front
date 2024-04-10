@@ -1,10 +1,13 @@
 import { useState, useCallback } from 'react';
 import { ChromePicker } from 'react-color';
 import _ from 'lodash';
-import { apiRequest } from './api';
+import { BASE_URL } from '../constants';
 
 
 function ColorPicker({ onAddColor }) {
+
+
+
 
 
   const [currentColor, setCurrentColor] = useState({
@@ -22,37 +25,49 @@ function ColorPicker({ onAddColor }) {
   const handleAddColor = async () => {
     const hexColor = `#${((1 << 24) + (currentColor.r << 16) + (currentColor.g << 8) + currentColor.b).toString(16).slice(1)}`;
 
+
     const existingColors = JSON.parse(localStorage.getItem('colors')) || [];
     const userData = JSON.parse(localStorage.getItem('userData'));
     const user_id = userData.userId;
     const token = userData.token;
-  
 
-   
+    const queryParams = new URLSearchParams({ color: hexColor.replace('#', '') }).toString();
 
-    if (existingColors.some(color => color.hex === hexColor)) {
-      alert('Color already exists in your palette');
-      return;
-    }
 
-    const queryParams = new URLSearchParams({user_id, token, color: hexColor });
-    const endpoint = `/users/${user_id}/colors?${queryParams}`;
-    
-
-    console.log(endpoint)
-  
     try {
-      // Make the API request
-      const response = await apiRequest(endpoint, 'POST');
-      if (response) {
+
+      const response = await fetch(`${BASE_URL}/users/${user_id}/colors?${queryParams}`, {
+        method: 'POST',
+        headers: {
+        'accept' : 'application/json',
+        'Authorization': `Bearer ${token}`}
+      });
+
+      const result = await response.json();
+
+      console.log(result);
+
+      if (response.ok) {
+
+
+        localStorage.setItem('colors', JSON.stringify([...existingColors, { hex: hexColor}]));
+
+
         setShowNiceMessage(true);
-        setTimeout(() => setShowNiceMessage(false), 2000);
+        setTimeout(() => {
+          setShowNiceMessage(false);
+        }, 2000);
+      } else {
+        console.log(result.error);
       }
+
+
+
     } catch (error) {
-      console.error('Error adding color:', error);
+      console.error(error);
     }
 
-    localStorage.setItem('colors', JSON.stringify([...existingColors, { hex: hexColor}]));
+  
 
   };
   

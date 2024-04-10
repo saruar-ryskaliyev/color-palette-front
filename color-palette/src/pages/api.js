@@ -5,8 +5,11 @@ export const apiRequest = async (endpoint, method, data, isJson = true) => {
     let headers = {};
     let body;
 
-    // Set headers and body based on whether the request is JSON or form-urlencoded
-    if (isJson) {
+    if (method === 'DELETE'){
+        headers['Accept'] = 'application/json';
+        body = JSON.stringify(data);
+    }
+    else if (isJson) {
         headers['Content-Type'] = 'application/json';
         body = JSON.stringify(data);
     } else {
@@ -31,7 +34,7 @@ export const apiRequest = async (endpoint, method, data, isJson = true) => {
             jsonData = await response.json();
         } catch (error) {
             if (response.ok) {
-                
+                // If the response is okay, but the body isn't JSON, return an empty object or some other default value
                 return {};
             } else {
                 // If the response is not okay, throw an error

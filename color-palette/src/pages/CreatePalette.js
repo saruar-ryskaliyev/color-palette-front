@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { EditMyColors } from './EditMyColors';
 import '../MyColors.css';
 import html2canvas from 'html2canvas';
+import { BASE_URL } from '../constants';
 
 
 const Container = styled.div`
@@ -89,7 +90,7 @@ export default function CreatePalette() {
 
 
     const navigate = useNavigate();
-    const { paletteName } = useParams(); 
+    const { paletteName } = useParams();
     const [colors, setColors] = useState([]);
     const [currentColor, setCurrentColor] = useState('#fff');
     const [myColors, setMyColors] = useState([]);
@@ -105,9 +106,6 @@ export default function CreatePalette() {
         setMyColors(loadedColors.map(colorObj => colorObj.hex));
 
         if (paletteName) {
-
-            console.log(`palette-${paletteName}`);
-
             const existingPalette = JSON.parse(localStorage.getItem(`palette-${paletteName}`));
 
             if (existingPalette) {
@@ -127,7 +125,7 @@ export default function CreatePalette() {
         html2canvas(paletteRef.current).then(canvas => {
             const image = canvas.toDataURL('image/png');
             const link = document.createElement('a');
-            
+
 
             link.href = image;
             link.download = 'palette.png';
@@ -157,7 +155,7 @@ export default function CreatePalette() {
         navigate('/my-palettes');
     };
 
-    const savePalette = () => {
+    const savePalette = async () => {
 
         if (name === '') {
             alert('Please provide a name for the palette');
@@ -170,11 +168,50 @@ export default function CreatePalette() {
         }
 
         const newPalette = {
-            name: name || paletteName,  
+            name: name || paletteName,
             colors: colors
         };
-        localStorage.setItem(`palette-${newPalette.name}`, JSON.stringify(newPalette));
-        navigate('/my-palettes');
+
+
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        const token = userData.token;
+        const user_id = userData.userId;
+
+        const queryParams = new URLSearchParams({ palette_key: newPalette.name }).toString();
+        const body = JSON.stringify(newPalette.colors);
+
+    
+
+        try {
+            const response = await fetch(`${BASE_URL}/users/${user_id}/palettes?${queryParams}`, {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: body
+            });
+
+            const result = await response.json();
+
+
+            if (response.ok) {
+                console.log(result);
+                localStorage.setItem(`palette-${newPalette.name}`, JSON.stringify(newPalette));
+                console.log(localStorage.getItem(`palette-${newPalette.name}`));
+                navigate('/my-palettes');
+            }
+            else {
+                console.error(result.error);
+            }
+
+
+        } catch (error) {
+            console.error(error);
+        }
+
+
     };
 
     const editColor = (color) => {
@@ -207,7 +244,7 @@ export default function CreatePalette() {
                     color={currentColor}
                     onChangeComplete={handleColorChange}
                 />
-                
+
             </ColorPickerContainer>
             <ColorGrid ref={paletteRef}>
                 {colors.map((color, index) => (
@@ -223,7 +260,7 @@ export default function CreatePalette() {
                                 const updatedColors = [...colors];
                                 updatedColors[colors.indexOf(editingColor)] = newColor;
                                 setColors(updatedColors);
-                            }}/>
+                            }} />
                     </ColorSwatch>
                 ))}
             </ColorGrid>
