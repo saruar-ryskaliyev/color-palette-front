@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import {useNavigate} from 'react-router-dom';
-import { apiRequest } from './api';
+import { useNavigate } from 'react-router-dom';
+import { apiRequest } from './pages/api';
 
 
 const Register = ({ onRegister }) => {
@@ -23,7 +23,7 @@ const Register = ({ onRegister }) => {
         }
 
         handleRegister(username, password);
-        
+
 
     };
 
@@ -39,7 +39,7 @@ const Register = ({ onRegister }) => {
                 colors: [],
                 palettes: {},
                 password: password,
-    
+
             }, true);
 
 

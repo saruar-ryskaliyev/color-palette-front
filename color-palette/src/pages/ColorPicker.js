@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { ChromePicker } from 'react-color';
 import _ from 'lodash';
+import { apiRequest } from './api';
+
 
 function ColorPicker({ onAddColor }) {
 
@@ -17,24 +19,43 @@ function ColorPicker({ onAddColor }) {
     setCurrentColor(color.rgb);
   }, 100), []); 
 
-  const handleAddColor = () => {
+  const handleAddColor = async () => {
     const hexColor = `#${((1 << 24) + (currentColor.r << 16) + (currentColor.g << 8) + currentColor.b).toString(16).slice(1)}`;
 
     const existingColors = JSON.parse(localStorage.getItem('colors')) || [];
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    const user_id = userData.userId;
+    const token = userData.token;
+  
 
-    // Check if the color already exists
+   
+
     if (existingColors.some(color => color.hex === hexColor)) {
-      alert('You already have this color in your library.'); // You can change this to a nicer notification if you prefer
+      alert('Color already exists in your palette');
       return;
     }
 
-    localStorage.setItem('colors', JSON.stringify([...existingColors, { hex: hexColor}]));
+    const queryParams = new URLSearchParams({user_id, token, color: hexColor });
+    const endpoint = `/users/${user_id}/colors?${queryParams}`;
     
-    setShowNiceMessage(true);
-    setTimeout(() => {
-      setShowNiceMessage(false); // Hide message
-    }, 2000); // Message shows for 2 seconds
+
+    console.log(endpoint)
+  
+    try {
+      // Make the API request
+      const response = await apiRequest(endpoint, 'POST');
+      if (response) {
+        setShowNiceMessage(true);
+        setTimeout(() => setShowNiceMessage(false), 2000);
+      }
+    } catch (error) {
+      console.error('Error adding color:', error);
+    }
+
+    localStorage.setItem('colors', JSON.stringify([...existingColors, { hex: hexColor}]));
+
   };
+  
   
 
 

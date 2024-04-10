@@ -31,7 +31,7 @@ export const apiRequest = async (endpoint, method, data, isJson = true) => {
             jsonData = await response.json();
         } catch (error) {
             if (response.ok) {
-                // If the response is okay, but the body isn't JSON, return an empty object or some other default value
+                
                 return {};
             } else {
                 // If the response is not okay, throw an error
