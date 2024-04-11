@@ -5,4 +5,5 @@ sqlalchemy==2.0.23
 typing-extensions==4.8.0
 python-jose==3.3.0
 uvicorn==0.24.0
-
+python-multipart==0.0.6
+bcrypt==4.0.1
