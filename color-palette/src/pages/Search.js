@@ -87,7 +87,6 @@ export default function Search() {
       }
       const data = await response.json();
       setSearchResults(data); 
-      console.log(data); 
     } catch (error) {
       console.error('Failed to fetch data:', error);
     }
@@ -103,7 +102,6 @@ export default function Search() {
   };
 
   const handleResultClick = (username, userId) => {
-    console.log('Clicked username:', username, 'with ID:', userId); 
     if (userId) {
       navigate(`/my-profile/${userId}`); 
     } else {

@@ -9,6 +9,23 @@
   .container { 
     text-align: center;
   }
+  .nav-button {
+    color: inherit; 
+    background-color: transparent; 
+    border: none;
+    padding: 0.25rem; 
+    font-size: inherit; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    height: 100%; 
+    transition: background-color 0.3s;
+  }
+  
+  .nav-button:hover {
+    background-color: #777; 
+  }
+  
   
   .nav {
     background-color: #333;

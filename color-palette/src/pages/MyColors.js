@@ -79,7 +79,6 @@ function MyColors() {
 
             updatedColors[index] = { hex: newColor };
 
-            console.log('Updated colors:', updatedColors)
 
             try {
                 const response = await fetch(`${BASE_URL}/users/${user_id}/colors/${colorHex}/${updatedColors[index].hex.replace('#','')}`, {
@@ -99,7 +98,6 @@ function MyColors() {
                     setColors(updatedColors);
                     localStorage.setItem('colors', JSON.stringify(updatedColors));
 
-                    console.log('Color updated:', updatedColors)
 
 
                 }

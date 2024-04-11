@@ -45,7 +45,7 @@ function ColorPicker({ onAddColor }) {
 
       const result = await response.json();
 
-      console.log(result);
+   
 
       if (response.ok) {
 
