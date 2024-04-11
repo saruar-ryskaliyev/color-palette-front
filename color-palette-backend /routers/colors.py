@@ -5,8 +5,6 @@ from models import User
 from schemas import UserBase, UserCreate
 from auth import decode_access_token
 from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm.session import object_session
-from sqlalchemy.orm.attributes import flag_modified
 
 
 
