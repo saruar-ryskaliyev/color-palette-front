@@ -167,10 +167,23 @@ export default function CreatePalette() {
             return;
         }
 
+
+        const hexColors = colors.map(color => color.replace('#', ''));
+
+
+
         const newPalette = {
+            name: name || paletteName,
+            colors: hexColors
+        };
+
+
+        const newPaletteStorage = {
             name: name || paletteName,
             colors: colors
         };
+        
+
 
 
         const userData = JSON.parse(localStorage.getItem('userData'));
@@ -179,6 +192,7 @@ export default function CreatePalette() {
 
         const queryParams = new URLSearchParams({ palette_key: newPalette.name }).toString();
         const body = JSON.stringify(newPalette.colors);
+
 
     
 
@@ -197,9 +211,7 @@ export default function CreatePalette() {
 
 
             if (response.ok) {
-                console.log(result);
-                localStorage.setItem(`palette-${newPalette.name}`, JSON.stringify(newPalette));
-                console.log(localStorage.getItem(`palette-${newPalette.name}`));
+                localStorage.setItem(`palette-${newPalette.name}`, JSON.stringify(newPaletteStorage));
                 navigate('/my-palettes');
             }
             else {
