@@ -19,6 +19,7 @@ export default function Navbar() {
                 <CustomLink to="/">Color Picker</CustomLink>
                 <CustomLink to="/my-colors">My Colors</CustomLink>
                 <CustomLink to="/my-palettes">My Palettes</CustomLink>
+                <CustomLink to='/search'>Search</CustomLink>
                 
                 {user && (
                     <>

@@ -10,6 +10,7 @@ from models import RevokedToken
 from models import User
 from datetime import timedelta
 from fastapi import status
+from typing import List
 
 router = APIRouter()
 
@@ -61,6 +62,18 @@ def logout(token: str, db: Session = Depends(get_db)):
     return {"message": "Token has been revoked"}
 
 
+@router.get("/users/search", response_model=List[schemas.User])
+def search_users(username: str, db: Session = Depends(get_db)):
+    users = db.query(User).filter(User.username.ilike(f"%{username}%")).all()
+    if not users:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No users found with that username"
+        )
+    return users
+
+
+
 @router.get("/users/{user_id}")
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
@@ -70,5 +83,4 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
             detail="User not found"
         )
     return {"username": user.username, "id": user.id, "colors": user.colors, "palettes": user.palettes}
-
 

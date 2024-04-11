@@ -9,6 +9,7 @@ import CreatePalette from './pages/CreatePalette';
 import Login from './Login';
 import Register from './Register';
 import MyProfile from './pages/MyProfile';
+import Search from './pages/Search';
 
 
 const App = () => {
@@ -28,6 +29,7 @@ const App = () => {
                             <Route path="/create-palette/:paletteName" element={<CreatePalette />} />
                             <Route path="*" element={<Navigate to="/" />} />
                             <Route path="/my-profile/:user_id" element={<MyProfile />} />
+                            <Route path='/search' element={<Search />} />
                         </>
                     ) : (
                         <>
