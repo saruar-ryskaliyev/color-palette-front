@@ -100,20 +100,20 @@ export default function CreatePalette() {
     const paletteRef = useRef(null);
 
 
-
     useEffect(() => {
         const loadedColors = JSON.parse(localStorage.getItem('colors')) || [];
         setMyColors(loadedColors.map(colorObj => colorObj.hex));
-
-        if (paletteName) {
-            const existingPalette = JSON.parse(localStorage.getItem(`palette-${paletteName}`));
-
-            if (existingPalette) {
-                setColors(existingPalette.colors);
-                setName(existingPalette.name);
-            }
+    
+        const loadedPalettes = JSON.parse(localStorage.getItem('palettes')) || [];
+    
+        const existingPalette = loadedPalettes.find(palette => palette.name === paletteName);
+    
+        if (existingPalette) {
+            setColors(existingPalette.colors.map(color => color.startsWith('#') ? color : `#${color}`)); 
+            setName(existingPalette.name);
         }
     }, [paletteName]);
+    
 
     const downloadPalette = () => {
 

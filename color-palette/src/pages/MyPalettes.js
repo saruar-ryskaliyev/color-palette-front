@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 import { BASE_URL } from '../constants';
+import html2canvas from 'html2canvas';
 
 const PaletteGrid = styled.div`
   display: grid;
@@ -43,13 +44,18 @@ const ColorPreview = styled.div`
   background-color: ${props => props.color};
 `;
 
+
+
+
 function MyPalettes() {
   const [palettes, setPalettes] = useState([]);
+  const paletteRefs = useRef({});
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     loadPalettes();
-    console.log(localStorage.getItem('palettes'));
+
   }, []);
 
   const loadPalettes = async() => {
@@ -58,7 +64,6 @@ function MyPalettes() {
     const user_id = userData.userId;
 
 
-    console.log('userId', user_id)
     const url = `${BASE_URL}/users/${user_id}/palettes`;
 
     try {
@@ -73,9 +78,6 @@ function MyPalettes() {
 
       if (response.ok) {
 
-        console.log('result', result)
-
-  
         const loadedPalettes = Object.entries(result).map(([name, colors]) => ({
           name,  
           colors: colors.map(color => `#${color}`)
@@ -92,6 +94,8 @@ function MyPalettes() {
 
 
 };
+
+
 
 
   const createPalette = () => {
@@ -133,7 +137,6 @@ function MyPalettes() {
     } catch (error) {
       console.error('Error deleting palette:', error);
     }
- 
 
     
     

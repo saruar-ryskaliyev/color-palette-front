@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../MyColors.css';
 import { EditMyColors } from './EditMyColors';
-import { apiRequest } from './api';
 import { BASE_URL } from '../constants';
 
 

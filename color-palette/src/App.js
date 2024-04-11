@@ -8,6 +8,7 @@ import MyColors from './pages/MyColors';
 import CreatePalette from './pages/CreatePalette';
 import Login from './Login';
 import Register from './Register';
+import MyProfile from './pages/MyProfile';
 
 
 const App = () => {
@@ -26,9 +27,11 @@ const App = () => {
                             <Route path="/create-palette" element={<CreatePalette />} />
                             <Route path="/create-palette/:paletteName" element={<CreatePalette />} />
                             <Route path="*" element={<Navigate to="/" />} />
+                            <Route path="/my-profile/:user_id" element={<MyProfile />} />
                         </>
                     ) : (
                         <>
+                            <Route path="/my-profile/:user_id" element={<MyProfile />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route path="*" element={<Navigate to="/login" />} />
