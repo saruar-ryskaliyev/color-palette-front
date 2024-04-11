@@ -70,6 +70,7 @@ function MyProfile() {
   const { user_id } = useParams();
   const paletteRefs = useRef({});
 
+
   useEffect(() => {
     fetch(`${BASE_URL}/users/${user_id}/colors`, {
       method: 'GET',

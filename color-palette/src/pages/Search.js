@@ -1,5 +1,72 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+
+
+
+const SearchContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  box-sizing: border-box;
+`;
+
+const SearchInput = styled.input`
+  margin-bottom: 10px;
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
+const SearchButton = styled.button`
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #5cb85c;
+  color: white;
+  cursor: pointer;
+`;
+
+const SearchTitle = styled.h1`
+  /* Add styles for your search title here if needed */
+`;
+
+const SearchResultList = styled.ul`
+  width: 100%;
+  max-width: 600px; // Same as the search container for alignment
+  padding: 0;
+  margin-top: 20px; // Space between search form and result list
+  list-style: none;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden; // For aesthetic purposes when items have border radius
+`;
+
+const SearchResultItem = styled.li`
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee; // Subtle separator between items
+
+  &:last-child {
+    border-bottom: none; // No border for the last item
+  }
+
+  &:hover {
+    background-color: #f8f8f8; // Slight change on hover to indicate interactivity
+  }
+
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out; // Smooth transition for hover effect
+`;
 
 export default function Search() {
   const [searchResults, setSearchResults] = useState([]);
@@ -45,24 +112,26 @@ export default function Search() {
   };
 
   return (
-    <div>
-      <h1>Search</h1>
-      <form onSubmit={handleSearchSubmit}>
-        <input
+    <SearchContainer>
+      <SearchTitle>Search</SearchTitle>
+      <form onSubmit={handleSearchSubmit} className="search-form">
+        <SearchInput
           type="text"
           value={searchQuery}
           onChange={handleInputChange}
           placeholder="Search by username"
         />
-        <button type="submit">Search</button>
+        <SearchButton type="submit">Search</SearchButton>
       </form>
-      <ul>
+      <SearchResultList>
         {searchResults.map((result, index) => (
-          <li key={index} onClick={() => handleResultClick(result.username, result.id)} style={{ cursor: 'pointer' }}>
+          <SearchResultItem key={index} onClick={() => handleResultClick(result.username, result.id)}>
             {result.username || 'No username provided'}
-          </li>
+          </SearchResultItem>
         ))}
-      </ul>
-    </div>
+      </SearchResultList>
+    </SearchContainer>
   );
 }
+
+

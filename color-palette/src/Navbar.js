@@ -1,15 +1,18 @@
 import React from "react";
-import { Link, useMatch, useResolvedPath } from "react-router-dom";
-import { useAuth } from "./AuthContext"; // Make sure the path is correct
+import { Link, useMatch, useResolvedPath, useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import './styles.css';
 
 export default function Navbar() {
-    const { user, logout } = useAuth(); 
+    const { user, logout } = useAuth();
 
+    const navigate = useNavigate();
 
+    function handleLogout(event) {
+        event.stopPropagation();
+        logout();
+        navigate('/login');
 
-    function handleLogout() {
-        logout(); 
     }
 
     return (
@@ -20,16 +23,19 @@ export default function Navbar() {
                 <CustomLink to="/my-colors">My Colors</CustomLink>
                 <CustomLink to="/my-palettes">My Palettes</CustomLink>
                 <CustomLink to='/search'>Search</CustomLink>
-                
+
                 {user && (
                     <>
                         <CustomLink to={`/my-profile/${user.userId}`}>My Profile</CustomLink>
-                        <CustomLink onClick={handleLogout} className="nav-list">Logout</CustomLink>
+                        <li className="nav-item">
+                            <button onClick={handleLogout} className="nav-button">Logout</button>
+                        </li>
+                        
                     </>
-                  
+
                 )}
 
-                
+
             </ul>
         </nav>
     );
